@@ -43,7 +43,7 @@ header {
     bottom: -6px;
     width: 100%;
     height: 3px;
-    background: #fff;
+    background: green;
     border-radius: 5px;
     transform: scaleX(0);
     transition: transform .5s;
@@ -69,16 +69,16 @@ header {
     font-weight: 500;
     margin-left: 40px;
     transition: .5s;
-}
+} 
 
 /* for btn-login-popup hover */
-.navigation .btn-login-popup:hover {
+/*.navigation .btn-login-popup:hover {
     background: #fff;
     color: #162938;
-}
+} */
 
 /* for btn-register-popup css */
-.navigation .btn-register-popup {
+/*.navigation .btn-register-popup {
     width: 130px;
     height: 50px;
     background: transparent;
@@ -91,13 +91,13 @@ header {
     font-weight: 500;
     margin-left: 40px; 
     transition: .5s;
-}
+} */
 
 /* for btn-register-popup hover css */
-.navigation .btn-register-popup:hover {
+/*.navigation .btn-register-popup:hover {
     background: #fff;
     color: #162938;
-}
+} */
 
 /* for body */
 body {
@@ -108,4 +108,184 @@ body {
     background: url('image/background.jpg') no-repeat;
     background-size: cover;
     background-position: center ;
+}
+
+.wrapper {
+    position: relative;
+    width: 400px;
+    height: 550px;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,.5);
+    border-radius:20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(0,0,0,.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.wrapper .form-box{
+    width: 100%;
+     height: 520px;
+    padding: 40px;
+}
+
+.wrapper .icon-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 45px;
+    height: 45px;
+    background: #162938;
+    font-size: 2em;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 20px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.wrapper p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper p a {
+    margin-left: 22px;
+    text-decoration: none;
+    color:green;
+}
+
+.wrapper p a:hover {
+    text-decoration: underline;
+}
+
+
+
+.form-box h2{
+    font-size: 2em;
+    color: #162938;
+    text-align: center;
+}
+
+.input-box{
+    position: relative;
+    width: 100%;   
+    height: 50px;
+    border-bottom: 2px solid #162938;   
+    margin: 19px 0;  
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color: #162938; 
+    font-weight: 500;
+    pointer-events: none;
+    transition: .5s;
+    
+}
+
+.input-box input:focus~label{
+    top: -5px;
+}
+
+
+
+
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;  
+    font-size: 1em;
+    color:#162938;
+    font-weight: 600;
+    padding: 0 35px 0 5px
+} 
+
+.input-box .icon {
+    position: absolute;
+    right: 8px;
+    font-size: 1.2em;
+    color:#162938;
+    line-height:  57px;
+}
+
+.remember-forgot {
+    font-size: .9em;
+    color:#162938;
+    font-weight: 500;
+    margin: -15px 0 15px;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+
+.remember-forgot label input {
+    accent-color: #162938;
+    margin-right: 3px;
+}
+
+.remember-forgot a {
+    color: green;
+    text-decoration: none;
+}
+
+.remember-forgot a:hover {
+    text-decoration: underline;
+}
+
+.btn-register {
+    width: 100%;
+    height: 40px;
+    background: #162938;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #fff;
+    font-weight: 500;
+}
+
+/*for login-btn */
+.login-box .login {
+    width: 90%;
+    height: 38px;
+    background: #162938;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #fff;
+    font-weight: 500;
+}
+
+.login-register {
+    font-size: .9em;
+    color:#162938;
+    text-align: center;
+    font-weight: 500;
+    margin: 11px 0 5px;
+}
+
+.login-register p a {
+    color:#162938;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-register a:hover{
+    text-decoration: underline;
 }
