@@ -11,11 +11,17 @@
     <!-- for php code --->
     <?php
         // for validation;
-        $nameError = "The User_name field is required!";
-        $emailError = "The User_email field is required!";
-        $passwordError = "The User_password field is required!";
-        $comfirmpassError = "The User_comfirmpassword field is required!";
-        $addressError = "The User_address field is required!";
+        $nameError = "";
+        $emailError = "";
+        $passwordError = "";
+        $comfirmpassError = "";
+        $addressError = "";
+        //for define variable to get current value in validation;
+        $user_name = "";
+        $user_email = "";
+        $user_password = "";
+        $user_comfirm_password = "";
+        $user_address = "";
 
         require ("database_connection.php");
         if(isset($_POST['register_btn'])){
@@ -25,14 +31,47 @@
            $user_comfirm_password = $_POST['comfirm-password'];
            $user_address = $_POST['address'];
 
-           $query = "INSERT INTO users (name,email,password,address)
-           VALUES 
-           ('$user_name','$user_email','$user_password','$user_address');";
-           $result = mysqli_query($db,$query);
-           if($result == true){
-                echo "<script>alert('Registration Successfully');</script>";
-           }else{
-                die('Error');
+           if(empty($user_name)){
+                $nameError = "The User_name field is required!";
+           }
+
+           if(empty($user_email)){
+                $emailError = "The User_email field is required!";
+           }
+
+           if(empty($user_password)){
+                $passwordError = "The User_password field is required!";
+           }
+
+           if(empty($user_comfirm_password)){
+                $comfirmpassError = "The User_comfirmpassword field is required!";
+           }
+
+           if(empty($user_address)){
+                $addressError = "The User_address field is required!";
+           }
+
+           if($user_comfirm_password != $user_password){
+                $comfirmpassError = "The password does not match!";
+           }
+
+           if(!empty($user_name) && !empty($user_email) && !empty($user_password) && !empty($user_comfirm_password) && !empty($user_address) && $user_comfirm_password == $user_password){
+                //encript password;
+                $pass_one = md5($user_password);
+                $pass_two = sha1($pass_one);
+                $pass_three = crypt($pass_two,$pass_two);
+
+                require("database_connection.php");
+                $query = "INSERT INTO users (name,email,password,address)
+                VALUES 
+                ('$user_name','$user_email','$pass_three','$user_address');";
+                $result = mysqli_query($db,$query);
+                if($result == true){
+                    echo "<script>alert('Registration Successfully');</script>";
+                    header('location:login.php');
+                }else{
+                    echo "Registration Fail!";
+                }
            }
         }
     ?>
@@ -58,7 +97,7 @@
                     <span class="icon">
                         <ion-icon name="person-circle"></ion-icon>
                     </span>
-                    <input type="text" name="name">
+                    <input type="text" name="name" value="<?php echo $user_name; ?>">
                     <label>Name</label>
                     <i class="text-danger">
                         <?php echo $nameError; ?>
@@ -68,7 +107,7 @@
                     <span class="icon">
                         <ion-icon name="mail"></ion-icon>
                     </span>
-                    <input type="text" name="email">
+                    <input type="text" name="email" value="<?php echo $user_email; ?>">
                     <label>Email</label>
                     <i class="text-danger">
                         <?php echo $emailError; ?>
@@ -79,7 +118,7 @@
                     <span class="icon">
                         <ion-icon name="lock-closed"></ion-icon>
                     </span>
-                    <input type="password" name="password">
+                    <input type="password" name="password" value="<?php echo $user_password; ?>">
                     <label>Pass</label>
                     <i class="text-danger">
                         <?php echo $passwordError; ?>
@@ -89,7 +128,7 @@
                     <span class="icon">
                         <ion-icon name="lock-closed"></ion-icon>
                     </span>
-                    <input type="password" name="comfirm-password">
+                    <input type="password" name="comfirm-password" value="<?php echo $user_comfirm_password; ?>">
                     <label>Comfrim Pass</label>
                     <i class="text-danger">
                         <?php echo $comfirmpassError; ?>
@@ -99,21 +138,20 @@
                     <span class="icon">
                         <ion-icon name="home"></ion-icon>
                     </span>
-                    <input type="address" name="address">
+                    <input type="address" name="address" value="<?php echo $user_address; ?>">
                     <label>Address</label>
                     <i class="text-danger">
                         <?php echo $addressError; ?>
                     </i>
-                </div><br>
+                </div>
                 <div class="remember-forgot">
                    <label>
                         <input type="checkbox">
                         I agree to the terms & conditions
                    </label>
-                   <!--a href="#">Forgot Password?</a-->
                 </div>
                 <button type="submit" name="register_btn" class="btn-register" >Register</button>
-                <p style="color:white">Already have an account? <a href="login.php">Login</a> </p>
+                <p style="color:red">Already have an account? <a href="login.php">Login</a> </p>
             </form>
         </div>
     </div>
