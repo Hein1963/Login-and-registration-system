@@ -1,4 +1,5 @@
-<?php 
+<?php
+    session_start();
     require ("database_connection.php");
 ?>
 <!DOCTYPE html>
@@ -17,8 +18,8 @@
             //define for $error;
             $error = "";
             if(isset($_POST['login-btn'])){
-                $user_email = $_POST['email'];
-                $user_password = $_POST['password'];
+                $user_email = trim($_POST['email']);
+                $user_password = trim($_POST['password']);
 
                 $pass_one = md5($user_password);
                 $pass_two = sha1($pass_one);
@@ -28,6 +29,8 @@
                 $user_result = mysqli_query($db,$query);
                 $user_count = mysqli_num_rows($user_result);
                 if($user_count === 1){
+                    $user_array = mysqli_fetch_assoc($user_result);
+                    $_SESSION['user_array'] = $user_array;
                     header ('location:admin-dashboard.php');
                 }else{
                     $error = "Invalid Email or Password";
@@ -49,12 +52,14 @@
         <div class="wrapper">
             <div class="form-box login">
                 <h2>Login</h2>
+                    <?php if($error != ""): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong><?php echo $error; ?></strong>
                         <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                    <?php endif ?>
                     <div class="input-box">
                         <span class="icon">
                             <ion-icon name="mail"></ion-icon>

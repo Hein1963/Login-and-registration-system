@@ -1,5 +1,12 @@
 <?php
+    session_start();
+    
+    if(!isset($_SESSION['user_array'])){
+        header('location:login.php');
+    }
+
     require ("database_connection.php");
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,44 +23,73 @@
     </style>
 </head>
 <body>
+    <!---**************for php code for logout action*****************--->
+    <?php 
+        if(isset($_POST['logout-btn'])){
+            session_destroy();
+            header('location:login.php');
+        }
+    ?>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header" style="background:skyblue">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card-title">
-                                    <a href="admin-dashboard.php">
-                                        <h6>Admin-Dashboard</h6>
+                                    <a href="admin-dashboard.php" style="text-decoration:none">
+                                        <h6 style="color:white">Admin-Dashboard</h6>
                                     </a>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                
+                                <form action="admin-dashboard.php" method="POST">
+                                    <button type="submit" name="logout-btn" class="btn btn-danger btn-small float-end" onclick="return confirm('Are you sure you want to logout?');">
+                                        Logout
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <h5>User List</h5>
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Address</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Moe Htet</td>
-                                    <td>moehtet@gmail.com</td>
-                                    <td>Mandalay</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6> Admin-information </h6>
+                                        <div>
+                                            Name: <?php echo $_SESSION['user_array']['name']; ?>
+                                        </div>
+                                        <div>
+                                            Email: <?php echo $_SESSION['user_array']['email']; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h5>User List</h5>
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Address</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Moe Htet</td>
+                                            <td>moehtet@gmail.com</td>
+                                            <td>Mandalay</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
