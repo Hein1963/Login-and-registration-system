@@ -30,8 +30,14 @@
                 $user_count = mysqli_num_rows($user_result);
                 if($user_count === 1){
                     $user_array = mysqli_fetch_assoc($user_result);
+
                     $_SESSION['user_array'] = $user_array;
-                    header ('location:admin-dashboard.php');
+
+                    if($user_array['role'] == 'user'){
+                        header('location:user-dashboard.php');
+                    }else{
+                        header('location:admin-dashboard.php');
+                    }
                 }else{
                     $error = "Invalid Email or Password";
                 }

@@ -1,11 +1,18 @@
 <?php
     session_start();
-    
+    require ("database_connection.php");
+
     if(!isset($_SESSION['user_array'])){
         header('location:login.php');
+    }else{
+        if($_SESSION['user_array']['role'] != 'Admin'){
+            header('location:user-dashboard.php');
+        }
     }
 
-    require ("database_connection.php");
+    
+
+    
     
 ?>
 <!DOCTYPE html>
@@ -23,11 +30,35 @@
     </style>
 </head>
 <body>
-    <!---**************for php code for logout action*****************--->
-    <?php 
-        if(isset($_POST['logout-btn'])){
-            session_destroy();
-            header('location:login.php');
+    <!--***************php codes for edit************************-->
+    <?php
+        //USER EDIT
+        $user_edition_form_status = false;
+
+        if(isset($_GET['user_id_to_update'])){
+
+            $user_edition_form_status = true;
+
+            $user_id_to_update = $_GET['user_id_to_update'];
+            $query = "SELECT * FROM users WHERE id=$user_id_to_update"; 
+            $result = mysqli_query($db,$query);
+            if($result){
+                $user = mysqli_fetch_assoc($result);
+            }else{
+                die('Error'. mysqli_error($db));
+            }
+        }
+
+        //USER UPDATE
+        if(isset($_POST['btn-update'])){
+            $user_id = $_POST['user_id'];
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $address = $_POST['address'];
+            $password = $_POST['password'];
+            $role = $_POST['role'];
+             
+
         }
     ?>
     <div class="container-fluid">
@@ -44,7 +75,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <form action="admin-dashboard.php" method="POST">
+                                <form action="logout.php" method="GET">
                                     <button type="submit" name="logout-btn" class="btn btn-danger btn-small float-end" onclick="return confirm('Are you sure you want to logout?');">
                                         Logout
                                     </button>
@@ -60,13 +91,67 @@
                                     <div class="card-body">
                                         <h6> Admin-information </h6>
                                         <div>
+                                            Role:
+                                            <span class="badge bg-success">
+                                                <?php echo $_SESSION['user_array']['role']; ?>
+                                            </span>
+                                        </div>
+                                        <div>
                                             Name: <?php echo $_SESSION['user_array']['name']; ?>
                                         </div>
                                         <div>
                                             Email: <?php echo $_SESSION['user_array']['email']; ?>
                                         </div>
+                                        <div>
+                                            Address: <?php echo $_SESSION['user_array']['address']; ?>
+                                        </div>
                                     </div>
                                 </div>
+                                <?php if($user_edition_form_status == true): ?>
+                                <div class="card mt-3">
+                                    <div class="card-header">
+                                        <div class="card-heading">User Edition From</div>
+                                    </div>
+                                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                                    <div class="card-body">
+                                        <input type="text" name="user_id" value="<?php echo $user['id']; ?>">
+                                        <div class="form-group">
+                                            <label>Name</label>
+                                            <input type="text" name="name" class="form-control" value="<?php echo $user['name']; ?>">
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label>Email</label>
+                                            <input type="email" name="email" class="form-control" value="<?php echo $user['email']; ?>">
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label>Address</label>
+                                            <textarea name="address" rows="1" class="form-control">
+                                                <?php echo $user['address']; ?>
+                                            </textarea>
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label>Password</label>
+                                            <input type="text" name="password" class="form-control" value="<?php echo $user['password']; ?>">
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label>Role</label>
+                                            <select  name="role" class="form-control">
+                                                <option value="">Select Role</option>
+                                                <option value="Admin" <?php if($user['role'] == 'Admin'){ ?> selected <?php } ?> >
+                                                    Admin
+                                                </option>
+                                                <option value="user" <?php if($user['role'] == 'user'){ ?> selected <?php } ?>>
+                                                    User
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button name="btn-update" class="btn btn-primary">Update</button>
+                                    </div>
+                                    </form>
+                                </div>
+                                <?php endif ?>
                             </div>
                             <div class="col-md-8">
                                 <h5>User List</h5>
@@ -77,15 +162,33 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Address</th>
+                                            <th>Role</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php 
+                                        $query = "SELECT * FROM users";
+                                        $result = mysqli_query($db,$query);
+                                        foreach($result as $user){
+
+                                        ?>
                                         <tr>
-                                            <td>1</td>
-                                            <td>Moe Htet</td>
-                                            <td>moehtet@gmail.com</td>
-                                            <td>Mandalay</td>
+                                            <td><?php echo $user['id']; ?></td>
+                                            <td><?php echo $user['name']; ?></td>
+                                            <td><?php echo $user['email']; ?></td>
+                                            <td><?php echo $user['address']; ?></td>
+                                            <td><?php echo $user['role']; ?></td>
+                                            <th>
+                                                <a href="admin-dashboard.php?user_id_to_update=<?php echo $user['id']; ?>" class="btn btn-primary btn-sm">
+                                                    Edit
+                                                </a>
+                                                <button class="btn btn-danger btn-sm">Delete</button>
+                                            </th>
                                         </tr>
+                                        <?php
+                                        }
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
