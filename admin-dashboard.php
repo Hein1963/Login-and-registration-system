@@ -52,13 +52,49 @@
         //USER UPDATE
         if(isset($_POST['btn-update'])){
             $user_id = $_POST['user_id'];
+
+            //for update password;
+            $query = "SELECT password FROM users WHERE id=$user_id";
+            $user_pass = mysqli_query($db,$query);
+            $user_array = mysqli_fetch_assoc($user_pass);
+            $old_password = $user_array['password'];
+
             $name = $_POST['name'];
             $email = $_POST['email'];
             $address = $_POST['address'];
-            $password = $_POST['password'];
+            $input_password = $_POST['password'];
             $role = $_POST['role'];
-             
 
+            /*$new_password = $old_password != $input_password ? md5($input_password) : $input_password; */
+            if($old_password != $input_password){
+                $update_password = md5($input_password);
+                $updated_password = sha1($update_password);
+                $latest_version_pass = crypt($updated_password,$updated_password);
+                $new_password = $latest_version_pass;
+            }else{
+                $new_password = $input_password;
+            }
+            
+            $query = "UPDATE users SET name='$name' , email='$email' , password='$new_password' , address='$address' , role='$role' WHERE id=$user_id";
+            $result = mysqli_query($db,$query);
+            if($result){
+                echo "<script>alert('A User Updated Successfully');</script>";
+            }else{
+                die('Error: '. mysqli_error($db));
+            } 
+        }
+
+        //User Delete;
+        if(isset($_GET['user_id_to_delete'])){
+            $user_id_to_delete = $_GET['user_id_to_delete'];
+            $query = "DELETE FROM users WHERE id=$user_id_to_delete";
+            $result = mysqli_query($db,$query);
+            if($result){
+                echo "<script>alert('A User Deleted Successfully');</script>";
+                header('location:admin-dashboard.php');
+            }else{
+                die('Error: '. mysqli_error($db));
+            }
         }
     ?>
     <div class="container-fluid">
@@ -105,16 +141,19 @@
                                         <div>
                                             Address: <?php echo $_SESSION['user_array']['address']; ?>
                                         </div>
+                                        <div>
+                                            Password: <?php echo $_SESSION['user_array']['password']; ?>
+                                        </div>
                                     </div>
                                 </div>
                                 <?php if($user_edition_form_status == true): ?>
                                 <div class="card mt-3">
-                                    <div class="card-header">
+                                    <div class="card-header" style="background:skyblue">
                                         <div class="card-heading">User Edition From</div>
                                     </div>
                                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                                     <div class="card-body">
-                                        <input type="text" name="user_id" value="<?php echo $user['id']; ?>">
+                                        <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                         <div class="form-group">
                                             <label>Name</label>
                                             <input type="text" name="name" class="form-control" value="<?php echo $user['name']; ?>">
@@ -179,12 +218,14 @@
                                             <td><?php echo $user['email']; ?></td>
                                             <td><?php echo $user['address']; ?></td>
                                             <td><?php echo $user['role']; ?></td>
-                                            <th>
+                                            <td>
                                                 <a href="admin-dashboard.php?user_id_to_update=<?php echo $user['id']; ?>" class="btn btn-primary btn-sm">
                                                     Edit
                                                 </a>
-                                                <button class="btn btn-danger btn-sm">Delete</button>
-                                            </th>
+                                                <a href="admin-dashboard.php?user_id_to_delete=<?php echo $user['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete?');">
+                                                    Delete
+                                                </a>
+                                            </td>
                                         </tr>
                                         <?php
                                         }
