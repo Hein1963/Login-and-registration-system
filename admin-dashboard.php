@@ -32,6 +32,16 @@
 <body>
     <!--***************php codes for edit************************-->
     <?php
+        //Read Authenicated user_data
+        $authenicated_user_id = $_SESSION['user_array']['id'];
+        $query = "SELECT * FROM users WHERE id=$authenicated_user_id";
+        $auth_user_result = mysqli_query($db,$query);
+        if($auth_user_result){
+            $auth_user_array = mysqli_fetch_array($auth_user_result);
+        }else{
+            die('Error: '. mysqli_error($db));
+        }
+
         //USER EDIT
         $user_edition_form_status = false;
 
@@ -79,6 +89,7 @@
             $result = mysqli_query($db,$query);
             if($result){
                 echo "<script>alert('A User Updated Successfully');</script>";
+                header('location:admin-dashboard.php');
             }else{
                 die('Error: '. mysqli_error($db));
             } 
@@ -129,20 +140,20 @@
                                         <div>
                                             Role:
                                             <span class="badge bg-success">
-                                                <?php echo $_SESSION['user_array']['role']; ?>
+                                                <?php echo $auth_user_array['role']; ?>
                                             </span>
                                         </div>
                                         <div>
-                                            Name: <?php echo $_SESSION['user_array']['name']; ?>
+                                            Name: <?php echo $auth_user_array['name']; ?>
                                         </div>
                                         <div>
-                                            Email: <?php echo $_SESSION['user_array']['email']; ?>
+                                            Email: <?php echo $auth_user_array['email']; ?>
                                         </div>
                                         <div>
-                                            Address: <?php echo $_SESSION['user_array']['address']; ?>
+                                            Address: <?php echo $auth_user_array['address']; ?>
                                         </div>
                                         <div>
-                                            Password: <?php echo $_SESSION['user_array']['password']; ?>
+                                            Password: <?php echo $auth_user_array['password']; ?>
                                         </div>
                                     </div>
                                 </div>

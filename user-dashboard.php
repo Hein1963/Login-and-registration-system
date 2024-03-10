@@ -19,6 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Registration System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="admin-dashboard.css">
     <style type="text/css">
         body{
@@ -28,6 +29,18 @@
 </head>
 <body>
    <?php 
+    // Read Authenticated user data
+        $auth_user_id = $_SESSION['user_array']['id'];
+        $query = "SELECT * FROM users WHERE id=$auth_user_id";
+        $auth_user_result = mysqli_query($db,$query);
+        if($auth_user_result){
+            $auth_user_array = mysqli_fetch_array($auth_user_result);
+        }else{
+            die('Error: '. mysqli_error($db));
+        }
+
+
+
     // for user-edition codes
         $user_edition_form_status = false;
         if(isset($_GET['user_id_to_update'])){
@@ -44,9 +57,51 @@
         }
 
     // for user-update codes
+        if(isset($_POST['btn-update'])){
+            $user_id = $_POST['user_id'];
+            
+            $query = "SELECT * FROM users WHERE id=$user_id";
+            $user_update = mysqli_query($db,$query);
+            $user_update_array = mysqli_fetch_assoc($user_update);
+
+            //for_password;
+            $old_password = $user_update_array['password'];
+
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $address = $_POST['address'];
+            //$role = $_POST['role'];
+            $input_password = $_POST['password'];
+
+            if($old_password != $input_password){
+                $update_password = md5($input_password);
+                $updated_password = sha1($update_password);
+                $latest_password = crypt($updated_password,$updated_password);
+                $renew_password = $latest_password;
+            }else{
+                $renew_password = $input_password;
+            }
+
+            $query = "UPDATE users SET name='$name' , email='$email' , password='$renew_password', address='$address'  WHERE id=$user_id";
+            $result = mysqli_query($db,$query);
+            if($result){
+                $_SESSION['expire_time'] = time() + (0.1 * 60);
+                $_SESSION['success_msg'] = "<script> swal('Good job!', 'Successfully!', 'success');</script>";
+                header('location:user-dashboard.php');
+            }else{
+                die('Error: '. mysqli_error($db));
+            }
+          /* if(time() < $_SESSION['expire_time']){
+                echo $_SESSION['success_msg'];
+           }else{
+                unset($_SESSION['success_msg']);
+                unset($_SESSION['expire_time']);
+           } */
+        }
+        
    ?>
     <div class="container-fluid">
-        <div class="row">
+        <div class="row"> 
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header" style="background:skyblue">
@@ -77,23 +132,23 @@
                                         <div>
                                             Role:
                                             <span class="badge bg-success">
-                                                <?php echo $_SESSION['user_array']['role']; ?>
+                                                <?php echo $auth_user_array['role']; ?>
                                             </span>
                                         </div>
                                         <div>
-                                            Name: <?php echo $_SESSION['user_array']['name']; ?>
+                                            Name: <?php echo $auth_user_array['name']; ?>
                                         </div>
                                         <div>
-                                            Email: <?php echo $_SESSION['user_array']['email']; ?>
+                                            Email: <?php echo $auth_user_array['email']; ?>
                                         </div>
                                         <div>
-                                            Address: <?php echo $_SESSION['user_array']['address']; ?>
+                                            Address: <?php echo $auth_user_array['address']; ?>
                                         </div>
                                         <div>
-                                            Password: <?php echo $_SESSION['user_array']['password']; ?>
+                                        Password:<?php echo $auth_user_array['password']; ?>
                                         </div>
                                         <div class="mt-3">
-                                            <a href="user-dashboard.php?user_id_to_update=<?php echo $_SESSION['user_array']['id']; ?>" class="btn btn-primary btn-sm">
+                                            <a href="user-dashboard.php?user_id_to_update=<?php echo $auth_user_array['id']; ?>" class="btn btn-primary btn-sm">
                                                 Edit Your Profile
                                             </a>
                                         </div>
@@ -109,7 +164,7 @@
                                     </div>
                                    
                                     <div class="card-body">
-                                        <input type="text" name="user_id" value="<?php echo $user['id']; ?>">
+                                        <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                         <div class="form-group">
                                             <label>Name</label>
                                             <input type="text" name="name" class="form-control" value="<?php echo $user['name']; ?>">
@@ -128,18 +183,18 @@
                                             <label>Password</label>
                                             <input type="text" name="password" class="form-control" value="<?php echo $user['password']; ?>">
                                         </div>
-                                        <div class="form-group mt-3">
+                                        <!--div class="form-group mt-3">
                                             <label>Role</label>
                                             <select  name="role" class="form-control">
                                                 <option value="">Select Role</option>
-                                                <option value="Admin" <?php if($user['role'] == 'Admin'){ ?> selected <?php } ?> >
+                                                <option value="Admin" <//?php if($user['role'] == 'Admin'){ ?> selected <//?php } ?> >
                                                     Admin
                                                 </option>
-                                                <option value="user" <?php  if($user['role'] == 'user'){ ?> selected <?php } ?>>
+                                                <option value="user" <//?php  if($user['role'] == 'user'){ ?> selected <//?php } ?>>
                                                     User
                                                 </option>
                                             </select>
-                                        </div>
+                                        </div-->
                                     </div>
                                     <div class="card-footer">
                                         <button name="btn-update" class="btn btn-primary">Update</button>
@@ -160,5 +215,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script>
+       
+    </script>
 </body>
 </html>
